@@ -2,6 +2,8 @@ import express from 'express';
 import { db } from '../config/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import { verifyToken } from '../middleware/auth';
+
 
 const router = express.Router();
 
@@ -20,5 +22,11 @@ router.post('/login', async (req, res) => {
 
   res.json({ token });
 });
+
+router.get('/users', verifyToken, async (req, res) => {
+  const [rows]: any = await db.query('SELECT id, first_name, last_name, email, dob, created_at, updated_at FROM users');
+  res.json(rows);
+});
+
 
 export default router;
