@@ -3,6 +3,8 @@ import { db } from '../config/db';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { verifyToken } from '../middleware/auth';
+import dotenv from 'dotenv'
+dotenv.config()
 
 
 const router = express.Router();
@@ -27,6 +29,20 @@ router.get('/users', verifyToken, async (req, res) => {
   const [rows]: any = await db.query('SELECT id, first_name, last_name, email, dob, created_at, updated_at FROM users');
   res.json(rows);
 });
+
+// Express route
+router.get("/validate-token", (req, res) => {
+  const token = req.headers.authorization?.split(" ")[1]
+  if (!token) return res.status(401).json({ message: "No token" })
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!)
+    return res.json({ valid: true })
+  } catch (err) {
+    return res.status(401).json({ valid: false })
+  }
+})
+
 
 
 export default router;
