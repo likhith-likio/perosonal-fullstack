@@ -10,6 +10,7 @@ dotenv.config()
 const router = express.Router();
 
 router.post('/login', async (req, res) => {
+  console.log("login called!");
   const { email, password } = req.body;
 
   const [rows]: any = await db.query('SELECT * FROM users WHERE email = ?', [email]);
@@ -26,12 +27,14 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/users', verifyToken, async (req, res) => {
+   console.log("/users called!");
   const [rows]: any = await db.query('SELECT id, first_name, last_name, email, dob, created_at, updated_at FROM users');
   res.json(rows);
 });
 
 // Express route
 router.get("/validate-token", (req, res) => {
+  console.log("/validate-token called!");
   const token = req.headers.authorization?.split(" ")[1]
   if (!token) return res.status(401).json({ message: "No token" })
 
