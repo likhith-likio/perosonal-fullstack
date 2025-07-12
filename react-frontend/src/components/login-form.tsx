@@ -9,6 +9,7 @@ import { useState } from "react"
 import { AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 import { motion, AnimatePresence } from "framer-motion"
+import { encryptToken } from "@/utils/crypto"
 
 export function LoginForm({
   className,
@@ -24,7 +25,8 @@ export function LoginForm({
     e.preventDefault()
     try {
       const data = await loginMutation.mutateAsync({ email, password })
-      localStorage.setItem("token", data.token) // Store token
+      const encrypted = encryptToken(data.token)
+      localStorage.setItem("token", encrypted)
       navigate("/dashboard") // Redirect
     } catch (error) {
       console.error("Login failed");
