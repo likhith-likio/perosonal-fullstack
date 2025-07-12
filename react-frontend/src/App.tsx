@@ -1,7 +1,7 @@
 import "./App.css"
 import { BrowserRouter as Router, Routes, Route, Navigate, Outlet } from 'react-router-dom'
 import LoginPage from './pages/LoginPage'
-import DashboardPage from './pages/DashboardPage'
+import {DashboardPage} from './pages/DashboardPage'
 import { useValidateToken } from './hooks/useValidateToken'
 import { decryptToken } from '@/utils/crypto'
 import MainLayout from './layouts/MainLayout'
