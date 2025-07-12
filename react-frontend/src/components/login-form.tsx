@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom"
 import { useState } from "react"
 import { AlertCircleIcon } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { motion, AnimatePresence } from "framer-motion"
 
 export function LoginForm({
   className,
@@ -70,15 +71,25 @@ export function LoginForm({
               <Button type="submit" className="w-full">
                 {loginMutation.isPending ? "Logging in..." : "Login"}
               </Button>
-                {loginMutation.isError && (
-                  <Alert variant="destructive">
-                    <AlertCircleIcon className="h-4 w-4" />
-                    <AlertTitle>Login Failed</AlertTitle>
-                    <AlertDescription>
-                      <p>Please check your username or password.</p>
-                    </AlertDescription>
-                  </Alert>
-                )}
+                <AnimatePresence>
+  {loginMutation.isError && (
+    <motion.div
+      key="login-error"
+      initial={{ opacity: 0, y: -10 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -10 }}
+      transition={{ duration: 0.3 }}
+    >
+      <Alert variant="destructive">
+        <AlertCircleIcon className="h-4 w-4" />
+        <AlertTitle>Login Failed</AlertTitle>
+        <AlertDescription>
+          <p>Please check your username or password.</p>
+        </AlertDescription>
+      </Alert>
+    </motion.div>
+  )}
+</AnimatePresence>
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
