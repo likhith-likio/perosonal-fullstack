@@ -3,16 +3,37 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useLoginMutation } from "@/hooks/useLogin"
+import { useNavigate } from "react-router-dom"
+import { useState } from "react"
+import { AlertCircleIcon } from "lucide-react"
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+    const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
+
+  const loginMutation = useLoginMutation()
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    try {
+      const data = await loginMutation.mutateAsync({ email, password })
+      localStorage.setItem("token", data.token) // Store token
+      navigate("/dashboard") // Redirect
+    } catch (error) {
+      console.error("Login failed");
+    }
+  }
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className="overflow-hidden p-0">
         <CardContent className="grid p-0 md:grid-cols-2">
-          <form className="p-6 md:p-8">
+          <form onSubmit={handleSubmit} className="p-6 md:p-8">
             <div className="flex flex-col gap-6">
               <div className="flex flex-col items-center text-center">
                 <h1 className="text-2xl font-bold">Welcome back</h1>
@@ -27,6 +48,8 @@ export function LoginForm({
                   type="email"
                   placeholder="m@example.com"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                 />
               </div>
               <div className="grid gap-3">
@@ -39,11 +62,23 @@ export function LoginForm({
                     Forgot your password?
                   </a>
                 </div>
-                <Input id="password" type="password" required />
+                <Input id="password" type="password" required 
+                value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
               </div>
               <Button type="submit" className="w-full">
-                Login
+                {loginMutation.isPending ? "Logging in..." : "Login"}
               </Button>
+                {loginMutation.isError && (
+                  <Alert variant="destructive">
+                    <AlertCircleIcon className="h-4 w-4" />
+                    <AlertTitle>Login Failed</AlertTitle>
+                    <AlertDescription>
+                      <p>Please check your username or password.</p>
+                    </AlertDescription>
+                  </Alert>
+                )}
               <div className="after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t">
                 <span className="bg-card text-muted-foreground relative z-10 px-2">
                   Or continue with
